@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block header_title %}System Overview & Metrics{% endblock %}
+
+{% block content %}
+<!-- KPI Statistics Grid -->
+<div class="row g-3 mb-4">
+  <div class="col-xl-2 col-md-4 col-sm-6">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Active Members</span>
+        <div class="stat-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+      </div>
+      <div class="stat-value">{{ stats.total_members }}</div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Active Plans</span>
+        <div class="stat-icon icon-emerald"><i class="fa-solid fa-id-card-clip"></i></div>
+      </div>
+      <div class="stat-value text-success">{{ stats.active_memberships }}</div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Expired Plans</span>
+        <div class="stat-icon icon-rose"><i class="fa-solid fa-clock-rotate-left"></i></div>
+      </div>
+      <div class="stat-value text-danger">{{ stats.expired_memberships }}</div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Gym Coaches</span>
+        <div class="stat-icon icon-teal"><i class="fa-solid fa-user-ninja"></i></div>
+      </div>
+      <div class="stat-value">{{ stats.total_trainers }}</div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Total Revenue</span>
+        <div class="stat-icon icon-amber"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+      </div>
+      <div class="stat-value text-dark" style="font-size: 1.45rem;">{{ stats.total_revenue | currency }}</div>
+    </div>
+  </div>
+
+  <div class="col-xl-2 col-md-4 col-sm-6">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Today's Check-ins</span>
+        <div class="stat-icon icon-purple"><i class="fa-solid fa-calendar-check"></i></div>
+      </div>
+      <div class="stat-value text-primary">{{ stats.today_attendance }}</div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Action Shortcuts -->
+<div class="card-custom p-3 mb-4 bg-white">
+  <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+    <span class="fw-bold small text-muted text-uppercase">
+      <i class="fa-solid fa-bolt text-warning me-1"></i> Quick Operations:
+    </span>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="{{ url_for('admin_members') }}" class="btn btn-outline-primary btn-sm">
+        <i class="fa-solid fa-user-plus me-1"></i> Add Member
+      </a>
+      <a href="{{ url_for('admin_assign_membership') }}" class="btn btn-outline-success btn-sm">
+        <i class="fa-solid fa-id-card me-1"></i> Assign Plan
+      </a>
+      <a href="{{ url_for('admin_payments') }}" class="btn btn-outline-dark btn-sm">
+        <i class="fa-solid fa-receipt me-1"></i> Record Payment
+      </a>
+      <a href="{{ url_for('admin_attendance') }}" class="btn btn-outline-info btn-sm">
+        <i class="fa-solid fa-calendar-plus me-1"></i> Mark Attendance
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Recent Member Registrations -->
+  <div class="col-lg-6">
+    <div class="card-custom h-100">
+      <div class="card-header-custom">
+        <h6 class="mb-0 fw-bold"><i class="fa-solid fa-user-clock text-primary me-2"></i>Recent Member Registrations</h6>
+        <a href="{{ url_for('admin_members') }}" class="small text-decoration-none">View All</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-custom mb-0">
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Phone</th>
+              <th>Registered</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in recent_members %}
+            <tr>
+              <td>
+                <div class="fw-semibold text-dark">{{ m.name }}</div>
+                <small class="text-muted">{{ m.email }}</small>
+              </td>
+              <td>{{ m.phone or '-' }}</td>
+              <td>{{ m.created_at | format_date }}</td>
+              <td>
+                <span class="badge {% if m.status == 'active' %}badge-active{% else %}badge-inactive{% endif %}">
+                  {{ m.status }}
+                </span>
+              </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No members registered yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Payments -->
+  <div class="col-lg-6">
+    <div class="card-custom h-100">
+      <div class="card-header-custom">
+        <h6 class="mb-0 fw-bold"><i class="fa-solid fa-money-check-dollar text-success me-2"></i>Recent Payments (Simulated/Manual)</h6>
+        <a href="{{ url_for('admin_payments') }}" class="small text-decoration-none">View All</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-custom mb-0">
+          <thead>
+            <tr>
+              <th>Member / Plan</th>
+              <th>Method</th>
+              <th>Amount</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in recent_payments %}
+            <tr>
+              <td>
+                <div class="fw-semibold text-dark">{{ p.member_name or 'Member' }}</div>
+                <small class="text-muted">{{ p.plan_name }}</small>
+              </td>
+              <td><span class="badge bg-light text-dark border">{{ p.payment_method }}</span></td>
+              <td class="fw-bold text-success">{{ p.amount | currency }}</td>
+              <td>{{ p.payment_date | format_date }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="4" class="text-center text-muted py-3">No payment records yet.</td></tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Expiring Soon Subscriptions -->
+  {% if expiring_soon %}
+  <div class="col-12">
+    <div class="card-custom border-warning">
+      <div class="card-header-custom bg-warning bg-opacity-10">
+        <h6 class="mb-0 fw-bold text-dark"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Memberships Expiring in the Next 7 Days</h6>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-custom mb-0">
+          <thead>
+            <tr>
+              <th>Member</th>
+              <th>Plan</th>
+              <th>Expiry Date</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for exp in expiring_soon %}
+            <tr>
+              <td class="fw-semibold">{{ exp.member_name }}</td>
+              <td>{{ exp.plan_name }}</td>
+              <td class="text-danger fw-semibold">{{ exp.end_date | format_date }}</td>
+              <td>
+                <a href="{{ url_for('admin_assign_membership', member_id=exp.member_id) }}" class="btn btn-outline-primary btn-sm">
+                  <i class="fa-solid fa-rotate-right me-1"></i> Renew Plan
+                </a>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

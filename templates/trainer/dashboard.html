@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Trainer Dashboard{% endblock %}
+{% block header_title %}Coach Portal - {{ trainer.name if trainer else 'Trainer' }}{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Assigned Trainees</span>
+        <div class="stat-icon icon-teal"><i class="fa-solid fa-users"></i></div>
+      </div>
+      <div class="stat-value">{{ total_trainees }}</div>
+      <small class="text-muted">Athletes under your supervision</small>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Available Workout Routines</span>
+        <div class="stat-icon icon-blue"><i class="fa-solid fa-dumbbell"></i></div>
+      </div>
+      <div class="stat-value text-primary">{{ available_workouts }}</div>
+      <small class="text-muted">Total gym templates</small>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">My Specialization</span>
+        <div class="stat-icon icon-purple"><i class="fa-solid fa-medal"></i></div>
+      </div>
+      <div class="h5 fw-bold text-dark mb-0">{{ trainer.specialization if trainer else 'Fitness Coach' }}</div>
+      <small class="text-muted">{{ trainer.experience_years if trainer else 1 }} Years Experience</small>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Shortcuts -->
+<div class="card-custom p-3 mb-4 bg-white">
+  <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+    <span class="fw-bold small text-muted text-uppercase">
+      <i class="fa-solid fa-bolt text-warning me-1"></i> Quick Coach Actions:
+    </span>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('trainer_trainees') }}" class="btn btn-outline-primary btn-sm">
+        <i class="fa-solid fa-user-group me-1"></i> Manage Trainees
+      </a>
+      <a href="{{ url_for('trainer_workouts') }}" class="btn btn-outline-success btn-sm">
+        <i class="fa-solid fa-plus me-1"></i> Build Workout Routine
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Assigned Trainees List -->
+<div class="card-custom">
+  <div class="card-header-custom">
+    <h6 class="mb-0 fw-bold"><i class="fa-solid fa-user-check text-primary me-2"></i>My Active Trainees</h6>
+    <a href="{{ url_for('trainer_trainees') }}" class="small text-decoration-none">View All Trainees</a>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-custom align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Member Name</th>
+          <th>Active Workout Routine</th>
+          <th>Difficulty</th>
+          <th>Assigned Date</th>
+          <th>Focus Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in assigned_members %}
+        <tr>
+          <td class="fw-bold text-dark">{{ a.member_name }}</td>
+          <td><span class="badge bg-light text-dark border">{{ a.workout_name }}</span></td>
+          <td><span class="badge bg-primary-subtle text-primary">{{ a.difficulty }}</span></td>
+          <td>{{ a.assigned_date | format_date }}</td>
+          <td><small class="text-muted">{{ a.notes or '-' }}</small></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center py-4 text-muted">No trainees assigned directly to your coaching profile yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

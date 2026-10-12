@@ -1,0 +1,336 @@
+# Project: Gym Management System — Full Stack Web Application
+
+Act as a senior full-stack developer and guide me through building a complete, professional Gym Management System from scratch. I am a student building this as a college project, so the code must be understandable, properly structured, fully functional, and easy to explain in a viva.
+
+## 1. Technology stack
+
+Use the following technologies:
+
+- **Frontend:** HTML5, CSS3, JavaScript, Bootstrap 5
+- **UI rendering:** Flask templates using Jinja2
+- **Backend:** Python Flask
+- **Database:** MySQL, managed using MySQL Workbench
+- **Database connector:** `mysql-connector-python`
+- **Authentication:** Flask sessions and Werkzeug password hashing
+- **API testing:** Postman
+- **Version control:** Git and GitHub
+- **Development environment:** VS Code
+
+Do not introduce React, Node.js, MongoDB, or other frameworks unless I explicitly ask.
+
+## 2. Main project objective
+
+Create a complete Gym Management System that allows gym administrators to manage members, trainers, memberships, payments, attendance, workout plans, and other gym operations through a professional web interface.
+
+The project must have a working connection between the frontend, Flask backend, and MySQL database. All important forms, buttons, tables, filters, and actions must work with actual database records, not hardcoded sample data.
+
+## 3. User roles
+
+Implement role-based authentication with these roles:
+
+### Admin
+- Secure admin login and logout
+- Admin dashboard with statistics
+- Add, view, edit, search, and deactivate gym members
+- Add, view, edit, and deactivate trainers
+- Create and manage membership plans
+- Assign membership plans to members
+- Track membership start dates, expiry dates, and status
+- Record and view payments
+- View attendance records
+- Create and assign workout plans
+- View reports for memberships, revenue, attendance, and members
+- Manage the system through a responsive admin dashboard
+
+### Member
+- Register and log in
+- View and edit permitted profile details
+- View current membership plan and expiry date
+- View payment history
+- View attendance history
+- View assigned workout plan
+- View membership status
+- Log out securely
+
+### Trainer
+- Log in securely
+- View assigned members
+- View and manage permitted workout plans
+- View relevant member information and training schedules
+
+Enforce permissions on the Flask backend. Hiding a button in the frontend is not sufficient for access control.
+
+## 4. MySQL database
+
+Create a complete SQL schema named `gym_management`.
+
+Include suitable tables such as:
+
+1. `users` — authentication, name, email, phone, password hash, role, account status
+2. `members` — member-specific details and registration date
+3. `trainers` — trainer profiles, specialization, experience, and availability
+4. `membership_plans` — plan name, duration, price, and description
+5. `member_memberships` — assigned plan, start date, end date, and status
+6. `payments` — member, membership, amount, payment date, method, transaction reference, and status
+7. `attendance` — member, check-in time, check-out time, and attendance date
+8. `workout_plans` — plan name, description, difficulty, and creator
+9. `member_workouts` — member, assigned workout plan, trainer, and assignment date
+10. `workout_exercises` — exercise name, sets, repetitions, duration, and instructions
+11. `trainer_assignments` — trainer-to-member assignments, if needed
+
+Use appropriate primary keys, foreign keys, unique constraints, indexes, data types, and referential integrity.
+
+Avoid storing duplicate information unnecessarily. Explain the relationships between tables and provide an ER diagram or Mermaid ER diagram.
+
+Provide a complete SQL script that I can paste into MySQL Workbench and execute. Also provide a few optional sample records for testing.
+
+Never store plaintext passwords. Hash passwords with Werkzeug.
+
+Do not claim that a payment was actually processed through a payment gateway. For this college project, implement a clearly labelled manual payment-recording or simulated-payment workflow unless I explicitly request a real payment integration.
+
+## 5. Professional user interface
+
+Build a polished, modern gym management interface.
+
+Design direction:
+- Dark navy or charcoal background for the admin sidebar
+- White or light grey content areas
+- Professional blue or teal accent colours
+- Clean typography and consistent spacing
+- Responsive layout for desktop, tablet, and mobile
+- Sidebar navigation with clear icons
+- Dashboard statistic cards
+- Searchable tables with status badges
+- Well-designed forms and confirmation dialogs
+- Success and error flash messages
+- Empty states and loading indicators where appropriate
+- Consistent buttons, inputs, spacing, margins, and headings
+
+Create the following pages:
+
+- Landing/home page
+- Login page
+- Member registration page
+- Admin dashboard
+- Member dashboard
+- Trainer dashboard
+- Members management
+- Trainers management
+- Membership plans
+- Membership assignment
+- Payments
+- Attendance
+- Workout plans
+- Reports
+- Profile page
+- Error and access-denied pages
+
+Use a shared base template and reusable components so the UI stays consistent. Make the result look like a real gym management product, not a basic tutorial project.
+
+## 6. Flask backend requirements
+
+Use a clean, modular project structure. For example:
+
+gym_management/
+    app.py
+    config.py
+    db.py
+    requirements.txt
+    schema.sql
+    README.md
+    .env.example
+    .gitignore
+    templates/
+        base.html
+        index.html
+        login.html
+        register.html
+        admin_dashboard.html
+        member_dashboard.html
+        trainer_dashboard.html
+        members/
+        trainers/
+        memberships/
+        payments/
+        attendance/
+        workouts/
+        reports/
+    static/
+        css/
+            style.css
+        js/
+            main.js
+        images/
+    tests/
+
+You may improve this structure if needed, but explain any changes.
+
+Implement:
+- A working MySQL connection
+- Flask routes for all required pages and actions
+- Parameterized SQL queries
+- Input validation and sensible error handling
+- Session-based authentication
+- Role-based authorization decorators or equivalent
+- Secure password hashing and verification
+- CSRF protection for browser forms
+- Protection against SQL injection
+- Safe handling of missing form fields
+- Appropriate HTTP status codes for API endpoints
+- Database transactions where necessary
+- Safe database connection and cursor cleanup
+- A secret key loaded from environment variables
+- No hardcoded database passwords or production secrets
+- Clear success and failure messages
+
+Use the same Flask server-rendered workflow as a typical student project. Keep the code easy to understand and explain.
+
+## 7. Postman testing
+
+Include a small, testable JSON API alongside the normal browser-based Flask routes. The web interface must continue to work through Jinja templates and HTML forms.
+
+Create and document endpoints such as:
+
+- `POST /api/auth/register`
+- `POST /api/auth/login`
+- `GET /api/members`
+- `GET /api/members/<id>`
+- `POST /api/members`
+- `PUT /api/members/<id>`
+- `GET /api/memberships`
+- `GET /api/attendance`
+- `POST /api/attendance`
+
+Protect private endpoints with appropriate authentication and role checks. Do not expose member data to unauthenticated users.
+
+For each endpoint, explain:
+- HTTP method
+- URL
+- Headers
+- Request body
+- Expected status code
+- Example success response
+- Example error response
+
+Provide a Postman collection JSON that I can import directly into Postman. Include example requests and tests for successful and unsuccessful requests.
+
+Use valid test data and explain how to test in the correct order. For registration, use a new email or handle duplicate email responses properly.
+
+The API should return JSON responses instead of HTML redirects. Browser routes can continue to return templates and redirects.
+
+## 8. GitHub
+
+Prepare the project for GitHub.
+
+Provide:
+- A suitable `.gitignore`
+- A `.env.example` file without real credentials
+- A professional `README.md`
+- Project setup instructions
+- Database setup instructions
+- Application run instructions
+- Postman testing instructions
+- A section for screenshots
+- A blank GitHub repository URL placeholder in the documentation
+
+Never commit `.env`, real passwords, secret keys, or personal data. Explain how to create a GitHub repository and push the project using Git commands.
+
+## 9. Reports and dashboard calculations
+
+Use real SQL queries to calculate:
+- Total active members
+- Active memberships
+- Expired memberships
+- Total trainers
+- Revenue received
+- Attendance for the current day
+- Recent registrations
+- Upcoming membership expirations
+
+Ensure the calculations are based on database data and handle empty databases correctly. Clearly distinguish recorded payments from simulated payment activity.
+
+## 10. Development workflow — follow these phases
+
+Work in phases and do not skip steps.
+
+### Phase 1: Requirements and planning
+- Explain the project architecture
+- List all features and user roles
+- Provide the folder structure
+- Explain how the frontend, Flask backend, MySQL, and Postman connect
+
+### Phase 2: Database design
+- Provide the complete `schema.sql`
+- Explain each table
+- Provide the relationships and ER diagram
+- Explain how to run the script in MySQL Workbench
+- Give verification SQL queries
+
+### Phase 3: Environment setup
+- Explain virtual environment creation
+- Provide the full `requirements.txt`
+- Explain package installation
+- Configure `.env`
+- Test the MySQL connection
+
+### Phase 4: Backend development
+- Build the complete Flask application
+- Implement authentication and authorization
+- Implement each module and database operation
+- Provide the full code for every file
+
+### Phase 5: Frontend development
+- Build all templates, CSS, and JavaScript
+- Connect every page and form to the backend
+- Ensure the interface is responsive and professional
+- Verify that navigation, actions, and messages work
+
+### Phase 6: Integration
+- Connect the UI to the database-backed Flask routes
+- Test each workflow end to end
+- Fix integration errors before moving on
+
+### Phase 7: Postman testing
+- Create the JSON API
+- Provide the importable Postman collection
+- Test valid and invalid requests
+- Verify important database changes in MySQL Workbench
+
+### Phase 8: Final testing
+- Test login, logout, registration, role permissions, membership assignment, payments, attendance, workouts, and reports
+- Check validation, duplicate emails, expired memberships, and unauthorized access
+- Provide a manual testing checklist
+
+### Phase 9: GitHub
+- Prepare README and `.gitignore`
+- Explain Git initialization, commits, repository creation, and pushing
+- Leave a blank repository URL placeholder until I provide my link
+
+### Phase 10: Documentation and viva preparation
+- Explain the architecture and database mapping
+- Provide a feature summary
+- Provide common viva questions with answers
+- Explain exactly where Postman is used
+- Explain what to demonstrate during the final project presentation
+
+## 11. Rules you must follow
+
+1. Give me complete code for every file, not fragments with instructions such as “add the rest yourself.”
+2. Clearly state each file's path before giving its code.
+3. Do not omit imports, route definitions, templates, CSS, SQL, or configuration needed for the feature to work.
+4. Never overwrite unrelated files or remove working functionality without explaining why.
+5. Before editing an existing project, inspect its current files and preserve useful code.
+6. Do not claim a feature works unless it has been implemented and tested.
+7. If an error occurs, diagnose the actual cause instead of repeatedly guessing.
+8. Keep database field names consistent across SQL, Python, HTML, and API requests.
+9. Give commands I can copy and paste into the VS Code terminal.
+10. Explain where to click in MySQL Workbench and Postman.
+11. Keep each phase organized and beginner-friendly.
+12. After each phase, tell me how to verify it and what successful output should look like.
+13. Wait for me to confirm a phase is complete before moving to the next phase.
+14. If Codex can access and edit my workspace, create and modify the actual files rather than only describing them.
+15. If you cannot access my workspace, provide each complete file's code and exact path.
+16. Do not generate fake screenshots, fake test results, or fake database records as proof of implementation.
+17. Keep the project suitable for a college submission and a live demonstration.
+
+Start with **Phase 1: Requirements and planning**. Explain the architecture and show the project structure first. Then proceed in order, giving full code and verification steps for each phase. Do not jump directly to the final application.

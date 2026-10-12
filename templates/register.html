@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+
+{% block title %}Member Registration - FitPulse Gym{% endblock %}
+
+{% block public_content %}
+<div class="container py-4">
+  <div class="auth-card" style="max-width: 600px;">
+    <div class="text-center mb-4">
+      <div class="stat-icon icon-teal mx-auto mb-3" style="width: 56px; height: 56px;">
+        <i class="fa-solid fa-user-plus fs-4"></i>
+      </div>
+      <h3 class="fw-bold mb-1">Create Member Account</h3>
+      <p class="text-muted small">Join FitPulse and track your workout journey</p>
+    </div>
+
+    <form method="POST" action="{{ url_for('register') }}">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label small fw-semibold">Full Name *</label>
+          <input type="text" class="form-control" name="name" placeholder="John Doe" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label small fw-semibold">Email Address *</label>
+          <input type="email" class="form-control" name="email" placeholder="john@example.com" required>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label small fw-semibold">Phone Number</label>
+          <input type="tel" class="form-control" name="phone" placeholder="9876543210">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label small fw-semibold">Password *</label>
+          <input type="password" class="form-control" name="password" placeholder="Create a password" required minlength="4">
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label small fw-semibold">Gender</label>
+          <select class="form-select" name="gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="col-md-6">
+          <label class="form-label small fw-semibold">Date of Birth</label>
+          <input type="date" class="form-control" name="dob">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label small fw-semibold">Emergency Contact Phone</label>
+          <input type="tel" class="form-control" name="emergency_contact" placeholder="Guardian / relative phone number">
+        </div>
+
+        <div class="col-12">
+          <label class="form-label small fw-semibold">Fitness Goals & Health Notes</label>
+          <textarea class="form-control" name="health_notes" rows="2" placeholder="e.g. Muscle building, fat loss, any allergies or injuries..."></textarea>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-3 mt-4 mb-3">
+        <i class="fa-solid fa-check me-2"></i> Register Account
+      </button>
+
+      <div class="text-center small text-muted">
+        Already registered?
+        <a href="{{ url_for('login') }}" class="text-primary fw-semibold text-decoration-none">Sign in here</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

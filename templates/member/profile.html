@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile{% endblock %}
+{% block header_title %}Member Profile & Settings{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card-custom">
+      <div class="card-header-custom">
+        <h5 class="mb-0 fw-bold"><i class="fa-solid fa-user-gear text-primary me-2"></i>My Fitness Profile</h5>
+        <span class="badge {% if member.status == 'active' %}badge-active{% else %}badge-inactive{% endif %}">
+          {{ member.status }}
+        </span>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST" action="{{ url_for('member_profile') }}">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Full Name</label>
+              <input type="text" class="form-control" value="{{ member.name }}" readonly disabled>
+              <small class="text-muted">Contact gym administration to change name.</small>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Email Address</label>
+              <input type="email" class="form-control" value="{{ member.email }}" readonly disabled>
+              <small class="text-muted">Primary account login email.</small>
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Phone Number</label>
+              <input type="tel" name="phone" class="form-control" value="{{ member.phone or '' }}">
+            </div>
+
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Gender</label>
+              <select name="gender" class="form-select">
+                <option value="Male" {% if member.gender == 'Male' %}selected{% endif %}>Male</option>
+                <option value="Female" {% if member.gender == 'Female' %}selected{% endif %}>Female</option>
+                <option value="Other" {% if member.gender == 'Other' %}selected{% endif %}>Other</option>
+              </select>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Emergency Contact Phone</label>
+              <input type="tel" name="emergency_contact" class="form-control" value="{{ member.emergency_contact or '' }}">
+            </div>
+
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Health & Fitness Goals</label>
+              <textarea name="health_notes" class="form-control" rows="3">{{ member.health_notes or '' }}</textarea>
+              <small class="text-muted">Your trainer views these notes to customize workouts.</small>
+            </div>
+          </div>
+
+          <div class="pt-4 border-top mt-4 text-end">
+            <button type="submit" class="btn btn-primary px-4 fw-semibold">
+              <i class="fa-solid fa-floppy-disk me-2"></i> Save Profile Details
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

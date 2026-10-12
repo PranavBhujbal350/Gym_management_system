@@ -1,0 +1,180 @@
+{% extends "base.html" %}
+
+{% block title %}Trainers Directory{% endblock %}
+{% block header_title %}Trainer & Coach Management{% endblock %}
+
+{% block content %}
+<div class="card-custom mb-4">
+  <div class="card-body p-3 d-flex align-items-center justify-content-between">
+    <div>
+      <h6 class="mb-1 fw-bold text-dark">Staff Roster</h6>
+      <small class="text-muted">Manage gym trainers, workout specialties, and schedules</small>
+    </div>
+    <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addTrainerModal">
+      <i class="fa-solid fa-plus"></i>
+      <span>Add New Trainer</span>
+    </button>
+  </div>
+</div>
+
+<div class="card-custom">
+  <div class="table-responsive">
+    <table class="table table-custom align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Trainer</th>
+          <th>Specialization</th>
+          <th>Experience</th>
+          <th>Availability</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for t in trainers %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="stat-icon icon-teal" style="width: 38px; height: 38px;">
+                <i class="fa-solid fa-user-ninja"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-dark">{{ t.name }}</div>
+                <small class="text-muted">{{ t.email }} | {{ t.phone or 'No phone' }}</small>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span class="badge bg-info-subtle text-info border">{{ t.specialization or 'General Fitness' }}</span>
+          </td>
+          <td>{{ t.experience_years }} Years</td>
+          <td>
+            <small class="text-muted"><i class="fa-regular fa-clock me-1"></i>{{ t.availability }}</small>
+          </td>
+          <td>
+            <span class="badge {% if t.status == 'active' %}badge-active{% else %}badge-inactive{% endif %}">
+              {{ t.status }}
+            </span>
+          </td>
+          <td class="text-end">
+            <div class="d-inline-flex gap-1">
+              <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editTrainerModal{{ t._id }}" title="Edit Trainer">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+
+              <form method="POST" action="{{ url_for('admin_toggle_trainer_status', trainer_id=t._id) }}" class="d-inline" onsubmit="return confirm('Toggle trainer status?');">
+                <button type="submit" class="btn btn-sm {% if t.status == 'active' %}btn-outline-danger{% else %}btn-outline-primary{% endif %}" title="Toggle Active">
+                  <i class="fa-solid {% if t.status == 'active' %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                </button>
+              </form>
+            </div>
+
+            <!-- Edit Trainer Modal -->
+            <div class="modal fade" id="editTrainerModal{{ t._id }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-start">
+                  <form method="POST" action="{{ url_for('admin_edit_trainer', trainer_id=t._id) }}">
+                    <div class="modal-header">
+                      <h5 class="modal-title fw-bold">Edit Trainer: {{ t.name }}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ t.name }}" required>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Phone</label>
+                        <input type="tel" name="phone" class="form-control" value="{{ t.phone or '' }}">
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Specialization</label>
+                        <input type="text" name="specialization" class="form-control" value="{{ t.specialization or '' }}">
+                      </div>
+                      <div class="row g-2 mb-3">
+                        <div class="col-6">
+                          <label class="form-label small fw-semibold">Experience (Years)</label>
+                          <input type="number" name="experience_years" class="form-control" value="{{ t.experience_years or 1 }}" min="0">
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label small fw-semibold">Availability</label>
+                          <input type="text" name="availability" class="form-control" value="{{ t.availability or 'Full-time' }}">
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Bio / Qualifications</label>
+                        <textarea name="bio" class="form-control" rows="2">{{ t.bio or '' }}</textarea>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="text-center py-4 text-muted">No trainers added yet.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Trainer Modal -->
+<div class="modal fade" id="addTrainerModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('admin_add_trainer') }}">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold"><i class="fa-solid fa-user-ninja text-primary me-2"></i>Add New Trainer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Full Name *</label>
+            <input type="text" name="name" class="form-control" required placeholder="Coach Name">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Email Address *</label>
+            <input type="email" name="email" class="form-control" required placeholder="coach@gym.com">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Phone Number</label>
+            <input type="tel" name="phone" class="form-control" placeholder="Phone">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Login Password</label>
+            <input type="password" name="password" class="form-control" value="trainer123" placeholder="Default: trainer123">
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Specialization</label>
+            <input type="text" name="specialization" class="form-control" placeholder="e.g. Strength, Weight Loss, CrossFit">
+          </div>
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label small fw-semibold">Experience (Years)</label>
+              <input type="number" name="experience_years" class="form-control" value="3" min="0">
+            </div>
+            <div class="col-6">
+              <label class="form-label small fw-semibold">Availability</label>
+              <input type="text" name="availability" class="form-control" value="Mon-Sat (6 AM - 2 PM)">
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Trainer Bio</label>
+            <textarea name="bio" class="form-control" rows="2" placeholder="Experience details and achievements"></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Create Trainer Account</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

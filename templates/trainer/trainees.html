@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Trainees{% endblock %}
+{% block header_title %}Gym Members & Trainees{% endblock %}
+
+{% block content %}
+<div class="card-custom">
+  <div class="card-header-custom">
+    <div>
+      <h6 class="mb-0 fw-bold"><i class="fa-solid fa-users-viewfinder text-primary me-2"></i>Gym Athlete Directory</h6>
+      <small class="text-muted">Review member fitness goals and assign tailored workout routines</small>
+    </div>
+  </div>
+  <div class="table-responsive">
+    <table class="table table-custom align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Athlete Name</th>
+          <th>Contact & Health Notes</th>
+          <th>Current Routine</th>
+          <th>Assigned Coach</th>
+          <th class="text-end">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
+          <td>
+            <div class="fw-bold text-dark">{{ m.name }}</div>
+            <small class="text-muted">{{ m.gender }} | {{ m.email }}</small>
+          </td>
+          <td>
+            <div class="small">{{ m.phone or '-' }}</div>
+            {% if m.health_notes %}
+              <small class="text-primary d-block"><i class="fa-solid fa-notes-medical me-1"></i>{{ m.health_notes }}</small>
+            {% else %}
+              <small class="text-muted">No specific health restrictions</small>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge bg-light text-dark border">{{ m.current_workout }}</span>
+          </td>
+          <td>
+            <small class="fw-semibold text-secondary">{{ m.assigned_trainer }}</small>
+          </td>
+          <td class="text-end">
+            <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#assignRoutineModal{{ m._id }}">
+              <i class="fa-solid fa-dumbbell me-1"></i> Assign Routine
+            </button>
+
+            <!-- Assign Routine Modal -->
+            <div class="modal fade" id="assignRoutineModal{{ m._id }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered text-start">
+                <div class="modal-content">
+                  <form method="POST" action="{{ url_for('trainer_assign_workout') }}">
+                    <input type="hidden" name="member_id" value="{{ m._id }}">
+                    <div class="modal-header">
+                      <h5 class="modal-title fw-bold">Assign Routine: {{ m.name }}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Choose Workout Routine *</label>
+                        <select name="workout_id" class="form-select" required>
+                          <option value="">-- Select Routine --</option>
+                          {% for w in workouts %}
+                            <option value="{{ w._id }}">{{ w.name }} ({{ w.difficulty }})</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Coaching Instructions & Focus Areas</label>
+                        <textarea name="notes" class="form-control" rows="3" placeholder="Rest periods, weights progression, warm-up reminders..."></textarea>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-primary btn-sm">Confirm Assignment</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5" class="text-center py-4 text-muted">No active members found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

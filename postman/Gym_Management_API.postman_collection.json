@@ -1,0 +1,196 @@
+{
+  "info": {
+    "_postman_id": "b3e9b142-2b3a-4e6f-9972-871c84d720b1",
+    "name": "FitPulse Gym Management System API",
+    "description": "Comprehensive REST API collection for Gym Management System. Includes authentication, member management, membership tracking, and attendance endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register Member (POST /api/auth/register)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sarah Connor\",\n  \"email\": \"sarah@example.com\",\n  \"phone\": \"9876543299\",\n  \"password\": \"sarah123\",\n  \"gender\": \"Female\",\n  \"dob\": \"1996-08-20\",\n  \"emergency_contact\": \"9876500099\",\n  \"health_notes\": \"CrossFit athlete aiming for stamina.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "register"]
+            }
+          }
+        },
+        {
+          "name": "Login User (POST /api/auth/login)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@gym.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Logout (POST /api/auth/logout)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Members",
+      "item": [
+        {
+          "name": "Get All Members (GET /api/members)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/members?status=active",
+              "host": ["{{base_url}}"],
+              "path": ["api", "members"],
+              "query": [
+                { "key": "status", "value": "active" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Member By ID (GET /api/members/:id)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/members/{{sample_member_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "members", "{{sample_member_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create Member (POST /api/members)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"David Miller\",\n  \"email\": \"david.miller@example.com\",\n  \"phone\": \"9876543233\",\n  \"password\": \"gym123\",\n  \"gender\": \"Male\",\n  \"dob\": \"1995-11-12\",\n  \"emergency_contact\": \"9876500012\",\n  \"health_notes\": \"No known conditions.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/members",
+              "host": ["{{base_url}}"],
+              "path": ["api", "members"]
+            }
+          }
+        },
+        {
+          "name": "Update Member (PUT /api/members/:id)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9876549999\",\n  \"health_notes\": \"Updated training goals: Marathon prep.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/members/{{sample_member_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "members", "{{sample_member_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Memberships",
+      "item": [
+        {
+          "name": "Get Memberships (GET /api/memberships)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/memberships?status=active",
+              "host": ["{{base_url}}"],
+              "path": ["api", "memberships"],
+              "query": [
+                { "key": "status", "value": "active" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Attendance",
+      "item": [
+        {
+          "name": "Get Attendance Logs (GET /api/attendance)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/attendance",
+              "host": ["{{base_url}}"],
+              "path": ["api", "attendance"]
+            }
+          }
+        },
+        {
+          "name": "Log Member Attendance (POST /api/attendance)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"member_id\": \"{{sample_member_id}}\",\n  \"date\": \"2026-10-12\",\n  \"check_in_time\": \"07:30:00\",\n  \"check_out_time\": \"08:45:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/attendance",
+              "host": ["{{base_url}}"],
+              "path": ["api", "attendance"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://127.0.0.1:5000"
+    },
+    {
+      "key": "sample_member_id",
+      "value": "6524f0c7a59e9842a1bc34e0"
+    }
+  ]
+}

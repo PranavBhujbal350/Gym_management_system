@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block title %}Members Directory{% endblock %}
+{% block header_title %}Gym Member Management{% endblock %}
+
+{% block content %}
+<div class="card-custom mb-4">
+  <div class="card-body p-3">
+    <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+      <!-- Search & Filter Form -->
+      <form method="GET" action="{{ url_for('admin_members') }}" class="d-flex flex-wrap gap-2 flex-grow-1" style="max-width: 600px;">
+        <div class="input-group">
+          <span class="input-group-text bg-white"><i class="fa-solid fa-magnifying-glass text-muted"></i></span>
+          <input type="text" name="search" class="form-control" placeholder="Search by name, email, or phone..." value="{{ search }}">
+          <select name="status" class="form-select" style="max-width: 140px;">
+            <option value="">All Statuses</option>
+            <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+            <option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option>
+          </select>
+          <button type="submit" class="btn btn-primary">Filter</button>
+          {% if search or status_filter %}
+            <a href="{{ url_for('admin_members') }}" class="btn btn-outline-secondary" title="Clear Filters"><i class="fa-solid fa-xmark"></i></a>
+          {% endif %}
+        </div>
+      </form>
+
+      <!-- Add Member Trigger Modal -->
+      <button class="btn btn-primary d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addMemberModal">
+        <i class="fa-solid fa-user-plus"></i>
+        <span>Add New Member</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Members Table -->
+<div class="card-custom">
+  <div class="table-responsive">
+    <table class="table table-custom align-middle mb-0">
+      <thead>
+        <tr>
+          <th>Member</th>
+          <th>Contact</th>
+          <th>Gender / DOB</th>
+          <th>Active Plan</th>
+          <th>Expiry Date</th>
+          <th>Status</th>
+          <th class="text-end">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for m in members %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center gap-2">
+              <div class="stat-icon icon-blue" style="width: 36px; height: 36px; font-size: 0.95rem;">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div>
+                <div class="fw-bold text-dark">{{ m.name }}</div>
+                <small class="text-muted">{{ m.email }}</small>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div>{{ m.phone or '-' }}</div>
+            {% if m.emergency_contact %}
+              <small class="text-muted"><i class="fa-solid fa-phone-volume me-1 text-danger"></i>{{ m.emergency_contact }}</small>
+            {% endif %}
+          </td>
+          <td>
+            <div>{{ m.gender or '-' }}</div>
+            <small class="text-muted">{{ m.dob or '-' }}</small>
+          </td>
+          <td>
+            <span class="badge bg-light text-dark border">
+              {{ m.active_plan }}
+            </span>
+          </td>
+          <td>
+            {% if m.plan_expiry %}
+              <span class="small fw-semibold text-secondary">{{ m.plan_expiry | format_date }}</span>
+            {% else %}
+              <span class="text-muted small">-</span>
+            {% endif %}
+          </td>
+          <td>
+            <span class="badge {% if m.status == 'active' %}badge-active{% else %}badge-inactive{% endif %}">
+              {{ m.status }}
+            </span>
+          </td>
+          <td class="text-end">
+            <div class="d-inline-flex gap-1">
+              <!-- Assign Plan Shortcut -->
+              <a href="{{ url_for('admin_assign_membership', member_id=m._id) }}" class="btn btn-sm btn-outline-success" title="Assign / Renew Plan">
+                <i class="fa-solid fa-id-card"></i>
+              </a>
+
+              <!-- Edit Modal Button -->
+              <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#editModal{{ m._id }}" title="Edit Details">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+
+              <!-- Toggle Active/Inactive Form -->
+              <form method="POST" action="{{ url_for('admin_toggle_member_status', member_id=m._id) }}" class="d-inline" onsubmit="return confirm('Toggle status for this member?');">
+                <button type="submit" class="btn btn-sm {% if m.status == 'active' %}btn-outline-danger{% else %}btn-outline-primary{% endif %}" title="Toggle Active/Deactivate">
+                  <i class="fa-solid {% if m.status == 'active' %}fa-user-slash{% else %}fa-user-check{% endif %}"></i>
+                </button>
+              </form>
+            </div>
+
+            <!-- Edit Member Modal -->
+            <div class="modal fade" id="editModal{{ m._id }}" tabindex="-1" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content text-start">
+                  <form method="POST" action="{{ url_for('admin_edit_member', member_id=m._id) }}">
+                    <div class="modal-header">
+                      <h5 class="modal-title fw-bold">Edit Member: {{ m.name }}</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Full Name</label>
+                        <input type="text" name="name" class="form-control" value="{{ m.name }}" required>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Phone Number</label>
+                        <input type="tel" name="phone" class="form-control" value="{{ m.phone or '' }}">
+                      </div>
+                      <div class="row g-2 mb-3">
+                        <div class="col-6">
+                          <label class="form-label small fw-semibold">Gender</label>
+                          <select name="gender" class="form-select">
+                            <option value="Male" {% if m.gender == 'Male' %}selected{% endif %}>Male</option>
+                            <option value="Female" {% if m.gender == 'Female' %}selected{% endif %}>Female</option>
+                            <option value="Other" {% if m.gender == 'Other' %}selected{% endif %}>Other</option>
+                          </select>
+                        </div>
+                        <div class="col-6">
+                          <label class="form-label small fw-semibold">Date of Birth</label>
+                          <input type="date" name="dob" class="form-control" value="{{ m.dob or '' }}">
+                        </div>
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Emergency Contact</label>
+                        <input type="tel" name="emergency_contact" class="form-control" value="{{ m.emergency_contact or '' }}">
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label small fw-semibold">Health & Fitness Notes</label>
+                        <textarea name="health_notes" class="form-control" rows="2">{{ m.health_notes or '' }}</textarea>
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+                      <button type="submit" class="btn btn-primary btn-sm">Save Changes</button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center py-4 text-muted">
+            <i class="fa-solid fa-users-slash fa-2x mb-2 d-block"></i>
+            No members found matching your search.
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- Add Member Modal -->
+<div class="modal fade" id="addMemberModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('admin_add_member') }}">
+        <div class="modal-header">
+          <h5 class="modal-title fw-bold"><i class="fa-solid fa-user-plus text-primary me-2"></i>Add New Member</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Full Name *</label>
+              <input type="text" name="name" class="form-control" required placeholder="Member name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Email Address *</label>
+              <input type="email" name="email" class="form-control" required placeholder="member@email.com">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Phone Number</label>
+              <input type="tel" name="phone" class="form-control" placeholder="9876543210">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Initial Password</label>
+              <input type="password" name="password" class="form-control" value="gym123" placeholder="Default: gym123">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Gender</label>
+              <select name="gender" class="form-select">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Date of Birth</label>
+              <input type="date" name="dob" class="form-control">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Emergency Contact</label>
+              <input type="tel" name="emergency_contact" class="form-control" placeholder="Guardian phone">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Health / Fitness Notes</label>
+              <textarea name="health_notes" class="form-control" rows="2" placeholder="Injuries, medical notes, or goals"></textarea>
+            </div>
+
+            <!-- Optional Initial Plan Assignment -->
+            <div class="col-12 border-top pt-3">
+              <label class="form-label small fw-bold text-primary"><i class="fa-solid fa-tags me-1"></i>Optional: Assign Initial Plan & Record Payment</label>
+              <div class="row g-2">
+                <div class="col-md-6">
+                  <select name="plan_id" class="form-select">
+                    <option value="">-- No plan now (assign later) --</option>
+                    {% for p in plans %}
+                      <option value="{{ p._id }}">{{ p.plan_name }} ({{ p.duration_days }} days - {{ p.price | currency }})</option>
+                    {% endfor %}
+                  </select>
+                </div>
+                <div class="col-md-6">
+                  <select name="payment_method" class="form-select">
+                    <option value="Cash">Payment Method: Cash</option>
+                    <option value="Card">Payment Method: Card</option>
+                    <option value="UPI / Online">Payment Method: UPI / Online</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary btn-sm">Create Member Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

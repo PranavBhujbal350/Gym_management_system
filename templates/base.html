@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Gym Management System{% endblock %} - FitPulse</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  
+  <!-- FontAwesome 6 Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% if session.get('user_id') %}
+<!-- Authenticated App Shell with Sidebar -->
+<div class="app-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <i class="fa-solid fa-dumbbell"></i>
+      <span>FitPulse Gym</span>
+    </div>
+    
+    <div class="sidebar-nav">
+      {% if session.get('role') == 'admin' %}
+        <div class="nav-section-title">Core Management</div>
+        <a href="{{ url_for('admin_dashboard') }}" class="nav-item-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+          <i class="fa-solid fa-gauge-high"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('admin_members') }}" class="nav-item-link {% if request.endpoint == 'admin_members' %}active{% endif %}">
+          <i class="fa-solid fa-users"></i>
+          <span>Members</span>
+        </a>
+        <a href="{{ url_for('admin_trainers') }}" class="nav-item-link {% if request.endpoint == 'admin_trainers' %}active{% endif %}">
+          <i class="fa-solid fa-user-ninja"></i>
+          <span>Trainers</span>
+        </a>
+        <a href="{{ url_for('admin_plans') }}" class="nav-item-link {% if request.endpoint == 'admin_plans' %}active{% endif %}">
+          <i class="fa-solid fa-tags"></i>
+          <span>Membership Plans</span>
+        </a>
+
+        <div class="nav-section-title">Operations</div>
+        <a href="{{ url_for('admin_assign_membership') }}" class="nav-item-link {% if request.endpoint == 'admin_assign_membership' %}active{% endif %}">
+          <i class="fa-solid fa-id-card"></i>
+          <span>Assign Plan</span>
+        </a>
+        <a href="{{ url_for('admin_payments') }}" class="nav-item-link {% if request.endpoint == 'admin_payments' %}active{% endif %}">
+          <i class="fa-solid fa-money-bill-wave"></i>
+          <span>Payments Ledger</span>
+        </a>
+        <a href="{{ url_for('admin_attendance') }}" class="nav-item-link {% if request.endpoint == 'admin_attendance' %}active{% endif %}">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>Attendance</span>
+        </a>
+        <a href="{{ url_for('admin_workouts') }}" class="nav-item-link {% if request.endpoint == 'admin_workouts' %}active{% endif %}">
+          <i class="fa-solid fa-heart-pulse"></i>
+          <span>Workout Plans</span>
+        </a>
+
+        <div class="nav-section-title">Insights</div>
+        <a href="{{ url_for('admin_reports') }}" class="nav-item-link {% if request.endpoint == 'admin_reports' %}active{% endif %}">
+          <i class="fa-solid fa-chart-line"></i>
+          <span>Reports & Analytics</span>
+        </a>
+
+      {% elif session.get('role') == 'trainer' %}
+        <div class="nav-section-title">Trainer Panel</div>
+        <a href="{{ url_for('trainer_dashboard') }}" class="nav-item-link {% if request.endpoint == 'trainer_dashboard' %}active{% endif %}">
+          <i class="fa-solid fa-gauge-high"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('trainer_trainees') }}" class="nav-item-link {% if request.endpoint == 'trainer_trainees' %}active{% endif %}">
+          <i class="fa-solid fa-user-group"></i>
+          <span>My Trainees</span>
+        </a>
+        <a href="{{ url_for('trainer_workouts') }}" class="nav-item-link {% if request.endpoint == 'trainer_workouts' %}active{% endif %}">
+          <i class="fa-solid fa-dumbbell"></i>
+          <span>Workout Routines</span>
+        </a>
+
+      {% elif session.get('role') == 'member' %}
+        <div class="nav-section-title">Member Area</div>
+        <a href="{{ url_for('member_dashboard') }}" class="nav-item-link {% if request.endpoint == 'member_dashboard' %}active{% endif %}">
+          <i class="fa-solid fa-house"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="{{ url_for('member_workouts') }}" class="nav-item-link {% if request.endpoint == 'member_workouts' %}active{% endif %}">
+          <i class="fa-solid fa-fire-flame-curved"></i>
+          <span>My Workout Plan</span>
+        </a>
+        <a href="{{ url_for('member_attendance') }}" class="nav-item-link {% if request.endpoint == 'member_attendance' %}active{% endif %}">
+          <i class="fa-solid fa-calendar-check"></i>
+          <span>My Attendance</span>
+        </a>
+        <a href="{{ url_for('member_payments') }}" class="nav-item-link {% if request.endpoint == 'member_payments' %}active{% endif %}">
+          <i class="fa-solid fa-receipt"></i>
+          <span>Payment History</span>
+        </a>
+        <a href="{{ url_for('member_profile') }}" class="nav-item-link {% if request.endpoint == 'member_profile' %}active{% endif %}">
+          <i class="fa-solid fa-user-gear"></i>
+          <span>My Profile</span>
+        </a>
+      {% endif %}
+    </div>
+    
+    <div class="sidebar-footer">
+      <div class="d-flex align-items-center justify-content-between">
+        <div>
+          <div class="text-white fw-semibold small text-truncate" style="max-width: 140px;">{{ session.get('user_name', 'User') }}</div>
+          <span class="badge bg-secondary text-uppercase" style="font-size: 0.65rem;">{{ session.get('role') }}</span>
+        </div>
+        <a href="{{ url_for('logout') }}" class="btn btn-sm btn-outline-danger" title="Logout">
+          <i class="fa-solid fa-right-from-bracket"></i>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content Wrapper -->
+  <main class="main-content">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="d-flex align-items-center gap-3">
+        <button id="sidebarToggle" class="btn btn-outline-secondary btn-sm d-lg-none">
+          <i class="fa-solid fa-bars"></i>
+        </button>
+        <h5 class="mb-0 fw-bold text-dark">{% block header_title %}Overview{% endblock %}</h5>
+      </div>
+
+      <div class="d-flex align-items-center gap-3">
+        <span class="text-muted small d-none d-md-inline">
+          <i class="fa-regular fa-calendar me-1"></i> {{ today_str }}
+        </span>
+        <div class="dropdown">
+          <button class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center gap-2 border" type="button" data-bs-toggle="dropdown">
+            <i class="fa-solid fa-circle-user text-primary fs-5"></i>
+            <span class="d-none d-sm-inline fw-semibold">{{ session.get('user_name') }}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+            <li><h6 class="dropdown-header">{{ session.get('user_email') }}</h6></li>
+            {% if session.get('role') == 'member' %}
+              <li><a class="dropdown-item" href="{{ url_for('member_profile') }}"><i class="fa-solid fa-user me-2 text-muted"></i>Profile</a></li>
+            {% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item text-danger" href="{{ url_for('logout') }}"><i class="fa-solid fa-right-from-bracket me-2"></i>Sign Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </header>
+
+    <!-- Page Body -->
+    <div class="page-body">
+      <!-- Flash Messages -->
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+              {% if category == 'success' %}<i class="fa-solid fa-circle-check me-2"></i>
+              {% elif category == 'danger' %}<i class="fa-solid fa-triangle-exclamation me-2"></i>
+              {% elif category == 'warning' %}<i class="fa-solid fa-circle-exclamation me-2"></i>
+              {% else %}<i class="fa-solid fa-circle-info me-2"></i>{% endif %}
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </main>
+</div>
+
+{% else %}
+<!-- Public Navigation (Landing / Login / Register) -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-bold d-flex align-items-center gap-2 fs-4" href="{{ url_for('index') }}">
+      <i class="fa-solid fa-dumbbell text-primary"></i>
+      <span>FitPulse</span>
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="publicNav">
+      <ul class="navbar-nav ms-auto align-items-center gap-2">
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('index') }}">Home</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('index') }}#plans">Memberships</a></li>
+        <li class="nav-item"><a class="nav-link text-white" href="{{ url_for('index') }}#trainers">Trainers</a></li>
+        <li class="nav-item ms-lg-2">
+          <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('login') }}">
+            <i class="fa-solid fa-arrow-right-to-bracket me-1"></i> Login
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-primary btn-sm px-3" href="{{ url_for('register') }}">
+            <i class="fa-solid fa-user-plus me-1"></i> Join Now
+          </a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="min-vh-100">
+  <!-- Flash Messages -->
+  <div class="container mt-3">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+  </div>
+  {% block public_content %}{% endblock %}
+</div>
+
+<!-- Public Footer -->
+<footer class="bg-dark text-white-50 py-4 border-top border-secondary">
+  <div class="container text-center">
+    <div class="fw-semibold text-white mb-1"><i class="fa-solid fa-dumbbell text-primary me-2"></i>FitPulse Gym Management System</div>
+    <small>College Capstone Project | Built with Flask, MongoDB & Bootstrap 5</small>
+  </div>
+</footer>
+{% endif %}
+
+<!-- Bootstrap 5 Bundle JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Custom Main JS -->
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

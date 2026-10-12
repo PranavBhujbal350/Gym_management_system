@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Sign In - FitPulse Gym{% endblock %}
+
+{% block public_content %}
+<div class="container py-4">
+  <div class="auth-card">
+    <div class="text-center mb-4">
+      <div class="stat-icon icon-blue mx-auto mb-3" style="width: 56px; height: 56px;">
+        <i class="fa-solid fa-lock fs-4"></i>
+      </div>
+      <h3 class="fw-bold mb-1">Welcome Back</h3>
+      <p class="text-muted small">Sign in to your Gym Management account</p>
+    </div>
+
+    <!-- Quick Demo Logins for Viva Demo -->
+    <div class="p-3 bg-light rounded-3 mb-4 border">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="small fw-bold text-dark"><i class="fa-solid fa-key text-warning me-1"></i> Quick Viva Demo Logins:</span>
+      </div>
+      <div class="d-flex flex-wrap gap-2">
+        <button type="button" class="demo-account-pill btn btn-sm" onclick="fillCredentials('admin@gym.com', 'admin123')">
+          <i class="fa-solid fa-shield-halved text-primary me-1"></i> Admin
+        </button>
+        <button type="button" class="demo-account-pill btn btn-sm" onclick="fillCredentials('trainer@gym.com', 'trainer123')">
+          <i class="fa-solid fa-user-ninja text-info me-1"></i> Trainer
+        </button>
+        <button type="button" class="demo-account-pill btn btn-sm" onclick="fillCredentials('member@gym.com', 'member123')">
+          <i class="fa-solid fa-user text-success me-1"></i> Member
+        </button>
+      </div>
+      <small class="text-muted d-block mt-2" style="font-size: 0.72rem;">Click any role to autofill test credentials.</small>
+    </div>
+
+    <form method="POST" action="{{ url_for('login') }}">
+      <div class="mb-3">
+        <label for="email" class="form-label small fw-semibold">Email Address</label>
+        <div class="input-group">
+          <span class="input-group-text bg-white"><i class="fa-regular fa-envelope text-muted"></i></span>
+          <input type="email" class="form-control" id="email" name="email" value="{{ email or '' }}" placeholder="name@example.com" required autofocus>
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label for="password" class="form-label small fw-semibold">Password</label>
+        <div class="input-group">
+          <span class="input-group-text bg-white"><i class="fa-solid fa-key text-muted"></i></span>
+          <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold rounded-3 mb-3">
+        <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Sign In
+      </button>
+
+      <div class="text-center small text-muted">
+        Don't have a gym membership yet?
+        <a href="{{ url_for('register') }}" class="text-primary fw-semibold text-decoration-none">Register here</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome to FitPulse Gym{% endblock %}
+
+{% block public_content %}
+<!-- Hero Section -->
+<section class="hero-section text-center text-lg-start">
+  <div class="container">
+    <div class="row align-items-center gy-5">
+      <div class="col-lg-7">
+        <span class="hero-badge">
+          <i class="fa-solid fa-bolt me-1"></i> Full-Stack Gym Management
+        </span>
+        <h1 class="display-4 fw-bold text-white mb-3">
+          Elevate Your Fitness & Gym Management Experience
+        </h1>
+        <p class="lead text-light mb-4" style="max-width: 600px;">
+          FitPulse delivers end-to-end management for gym administrators, certified trainers, and fitness enthusiasts. Effortlessly manage memberships, workouts, attendance, and payments.
+        </p>
+        <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
+          <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg px-4 shadow">
+            <i class="fa-solid fa-dumbbell me-2"></i> Join as Member
+          </a>
+          <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-4">
+            <i class="fa-solid fa-arrow-right-to-bracket me-2"></i> Portal Login
+          </a>
+        </div>
+      </div>
+      <div class="col-lg-5 text-center">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="p-4 bg-dark bg-opacity-75 border border-secondary rounded-4 shadow">
+              <i class="fa-solid fa-users fa-2x text-primary mb-2"></i>
+              <div class="h3 fw-bold text-white mb-0">{{ stats.members }}</div>
+              <small class="text-white-50">Active Members</small>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="p-4 bg-dark bg-opacity-75 border border-secondary rounded-4 shadow">
+              <i class="fa-solid fa-user-ninja fa-2x text-info mb-2"></i>
+              <div class="h3 fw-bold text-white mb-0">{{ stats.trainers }}</div>
+              <small class="text-white-50">Pro Trainers</small>
+            </div>
+          </div>
+          <div class="col-12">
+            <div class="p-4 bg-dark bg-opacity-75 border border-secondary rounded-4 shadow">
+              <i class="fa-solid fa-calendar-check fa-2x text-success mb-2"></i>
+              <div class="h3 fw-bold text-white mb-0">{{ stats.plans }}</div>
+              <small class="text-white-50">Custom Membership Plans</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Section -->
+<section class="py-5 bg-white">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <h6 class="text-primary text-uppercase fw-bold">Platform Capabilities</h6>
+      <h2 class="fw-bold">Everything You Need to Run a Modern Gym</h2>
+      <p class="text-muted">Designed for smooth coordination between gym desk, coaches, and gym-goers.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+          <div class="stat-icon icon-blue mb-3">
+            <i class="fa-solid fa-id-card"></i>
+          </div>
+          <h5 class="fw-bold">Membership Tracking</h5>
+          <p class="text-muted mb-0">Automate plan durations, renewal countdowns, expiry tracking, and recorded payment audit logs.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+          <div class="stat-icon icon-teal mb-3">
+            <i class="fa-solid fa-clipboard-list"></i>
+          </div>
+          <h5 class="fw-bold">Workout Builder</h5>
+          <p class="text-muted mb-0">Trainers craft customized workout programs with sets, reps, and exercise instructions assigned directly to trainees.</p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 rounded-4">
+          <div class="stat-icon icon-emerald mb-3">
+            <i class="fa-solid fa-chart-pie"></i>
+          </div>
+          <h5 class="fw-bold">Real-time Analytics</h5>
+          <p class="text-muted mb-0">Live reports on daily attendance, monthly revenue, membership retention, and trainer assignments.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Membership Pricing Section -->
+<section id="plans" class="py-5 bg-light">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <h6 class="text-primary text-uppercase fw-bold">Choose Your Package</h6>
+      <h2 class="fw-bold">Flexible Membership Plans</h2>
+      <p class="text-muted">No hidden charges. Select the package that fits your fitness ambition.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      {% for plan in plans %}
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden position-relative">
+          <div class="p-4 text-center border-bottom bg-white">
+            <h4 class="fw-bold mb-1">{{ plan.plan_name }}</h4>
+            <span class="badge bg-primary-subtle text-primary mb-3">{{ plan.duration_days }} Days Duration</span>
+            <div class="display-6 fw-bold text-dark">{{ plan.price | currency }}</div>
+          </div>
+          <div class="p-4 bg-white flex-grow-1 d-flex flex-column justify-content-between">
+            <p class="text-muted small mb-4">{{ plan.description }}</p>
+            <a href="{{ url_for('register') }}" class="btn btn-outline-primary w-100 py-2 rounded-3 fw-semibold">
+              Get Started Now
+            </a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Trainers Showcase -->
+<section id="trainers" class="py-5 bg-white">
+  <div class="container py-4">
+    <div class="text-center mb-5">
+      <h6 class="text-primary text-uppercase fw-bold">Our Certified Coaches</h6>
+      <h2 class="fw-bold">Meet the Training Experts</h2>
+      <p class="text-muted">Expert trainers dedicated to helping you achieve your physical goals.</p>
+    </div>
+
+    <div class="row g-4 justify-content-center">
+      {% for trainer in trainers %}
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 border-0 shadow-sm rounded-4 p-4 text-center">
+          <div class="mx-auto mb-3 stat-icon icon-teal" style="width: 72px; height: 72px; font-size: 2rem;">
+            <i class="fa-solid fa-user-ninja"></i>
+          </div>
+          <h5 class="fw-bold mb-1">{{ trainer.name }}</h5>
+          <span class="text-primary fw-semibold small mb-2 d-block">{{ trainer.specialization }}</span>
+          <p class="text-muted small mb-3">{{ trainer.bio or "Certified fitness coach helping members build strength and healthy habits." }}</p>
+          <div class="badge bg-light text-dark border p-2 w-100">
+            <i class="fa-regular fa-clock me-1 text-primary"></i> {{ trainer.availability }}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

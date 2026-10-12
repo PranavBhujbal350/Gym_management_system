@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}Assign Membership Plan{% endblock %}
+{% block header_title %}Assign or Renew Membership{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-lg-8">
+    <div class="card-custom">
+      <div class="card-header-custom">
+        <h5 class="mb-0 fw-bold"><i class="fa-solid fa-id-card text-primary me-2"></i>Membership Subscription Form</h5>
+      </div>
+      <div class="card-body p-4">
+        <form method="POST" action="{{ url_for('admin_assign_membership') }}">
+          <!-- Member Selection -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">1. Select Member *</label>
+            <select name="member_id" class="form-select form-select-lg" required>
+              <option value="">-- Choose Gym Member --</option>
+              {% for m in members %}
+                <option value="{{ m._id }}" {% if selected_member_id == m._id|string %}selected{% endif %}>
+                  {{ m.name }} ({{ m.email }} | {{ m.phone or 'No phone' }})
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Plan Selection -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">2. Choose Membership Package *</label>
+            <div class="row g-3">
+              {% for p in plans %}
+              <div class="col-md-4">
+                <div class="p-3 border rounded-3 bg-light text-center h-100">
+                  <input type="radio" name="plan_id" value="{{ p._id }}" id="plan_{{ p._id }}" class="form-check-input mb-2" required {% if loop.first %}checked{% endif %}>
+                  <label for="plan_{{ p._id }}" class="d-block cursor-pointer">
+                    <div class="fw-bold text-dark">{{ p.plan_name }}</div>
+                    <div class="text-primary fw-bold my-1">{{ p.price | currency }}</div>
+                    <small class="text-muted">{{ p.duration_days }} Days</small>
+                  </label>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Payment Details -->
+          <div class="mb-4">
+            <label class="form-label fw-semibold">3. Payment Method (Simulated / Recorded)</label>
+            <div class="row g-2">
+              <div class="col-md-4">
+                <div class="form-check p-3 border rounded-3 bg-light">
+                  <input class="form-check-input ms-0 me-2" type="radio" name="payment_method" id="payCash" value="Cash" checked>
+                  <label class="form-check-label fw-semibold" for="payCash">
+                    <i class="fa-solid fa-money-bill me-1 text-success"></i> Cash
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-check p-3 border rounded-3 bg-light">
+                  <input class="form-check-input ms-0 me-2" type="radio" name="payment_method" id="payCard" value="Credit/Debit Card">
+                  <label class="form-check-label fw-semibold" for="payCard">
+                    <i class="fa-solid fa-credit-card me-1 text-primary"></i> Credit / Debit Card
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-check p-3 border rounded-3 bg-light">
+                  <input class="form-check-input ms-0 me-2" type="radio" name="payment_method" id="payUPI" value="UPI / Online">
+                  <label class="form-check-label fw-semibold" for="payUPI">
+                    <i class="fa-solid fa-mobile-screen-button me-1 text-info"></i> UPI / Online
+                  </label>
+                </div>
+              </div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+              <i class="fa-solid fa-circle-info me-1"></i> Submitting this form activates the membership starting today, calculates the expiry date automatically, and logs a completed payment record.
+            </small>
+          </div>
+
+          <div class="d-flex justify-content-end gap-2 pt-3 border-top">
+            <a href="{{ url_for('admin_members') }}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" class="btn btn-primary px-4 fw-semibold">
+              <i class="fa-solid fa-check me-2"></i> Confirm & Activate Plan
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
