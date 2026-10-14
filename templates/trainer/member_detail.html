@@ -1,0 +1,218 @@
+{% extends "base.html" %}
+
+{% block title %}Member Details - {{ member.name }}{% endblock %}
+{% block header_title %}Member Profile: {{ member.name }}{% endblock %}
+
+{% block content %}
+
+<!-- Back + Actions Bar -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <a href="{{ url_for('trainer_trainees') }}" class="btn btn-outline-secondary btn-sm">
+    <i class="fa-solid fa-arrow-left me-1"></i> Back to Trainees
+  </a>
+  <div class="d-flex gap-2">
+    <a href="{{ url_for('trainer_trainees') }}" class="btn btn-primary btn-sm">
+      <i class="fa-solid fa-dumbbell me-1"></i> Assign Workout
+    </a>
+  </div>
+</div>
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Membership</span>
+        <div class="stat-icon icon-blue"><i class="fa-solid fa-id-card"></i></div>
+      </div>
+      {% if active_sub %}
+        <div class="stat-value text-success" style="font-size:18px;">{{ active_sub.plan_name }}</div>
+        <small class="text-muted">Expires: {{ active_sub.end_date | format_date }}</small>
+      {% else %}
+        <div class="stat-value text-danger" style="font-size:16px;">No Active Plan</div>
+        <small class="text-muted">Not currently subscribed</small>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Total Check-ins</span>
+        <div class="stat-icon icon-teal"><i class="fa-solid fa-calendar-check"></i></div>
+      </div>
+      <div class="stat-value">{{ attendance_count }}</div>
+      <small class="text-muted">Gym sessions logged</small>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Current Workout</span>
+        <div class="stat-icon icon-purple"><i class="fa-solid fa-dumbbell"></i></div>
+      </div>
+      {% if assigned_workout %}
+        <div class="stat-value text-primary" style="font-size:16px;">{{ assigned_workout.workout_name }}</div>
+        <small class="text-muted">{{ assigned_workout.difficulty }}</small>
+      {% else %}
+        <div class="stat-value text-muted" style="font-size:14px;">Not Assigned</div>
+        <small class="text-muted">Go to trainees to assign</small>
+      {% endif %}
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="stat-card">
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <span class="stat-label">Total Payments</span>
+        <div class="stat-icon icon-blue"><i class="fa-solid fa-indian-rupee-sign"></i></div>
+      </div>
+      <div class="stat-value text-success">{{ payments | length }}</div>
+      <small class="text-muted">Transactions on record</small>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Member Info Card -->
+  <div class="col-lg-4">
+    <div class="card-custom h-100">
+      <div class="card-header-custom">
+        <h6 class="mb-0 fw-bold"><i class="fa-solid fa-user text-primary me-2"></i>Member Information</h6>
+      </div>
+      <div class="card-body p-4">
+        <div class="text-center mb-4">
+          <div style="width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:32px;color:white;font-weight:700;margin:0 auto;">
+            {{ member.name[0].upper() }}
+          </div>
+          <h5 class="fw-bold mt-3 mb-0">{{ member.name }}</h5>
+          <small class="text-muted">{{ member.gender }} Member</small>
+        </div>
+
+        <div class="mb-3">
+          <div class="small text-muted text-uppercase fw-semibold mb-1">Email</div>
+          <div class="fw-semibold">{{ member.email }}</div>
+        </div>
+        <div class="mb-3">
+          <div class="small text-muted text-uppercase fw-semibold mb-1">Phone</div>
+          <div>{{ member.phone or 'N/A' }}</div>
+        </div>
+        <div class="mb-3">
+          <div class="small text-muted text-uppercase fw-semibold mb-1">Date of Birth</div>
+          <div>{{ member.dob or 'N/A' }}</div>
+        </div>
+        <div class="mb-3">
+          <div class="small text-muted text-uppercase fw-semibold mb-1">Emergency Contact</div>
+          <div>{{ member.emergency_contact or 'N/A' }}</div>
+        </div>
+        {% if member.health_notes %}
+        <div class="alert alert-warning py-2 small mt-3">
+          <i class="fa-solid fa-notes-medical me-1"></i>
+          <strong>Health Notes:</strong> {{ member.health_notes }}
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment History -->
+  <div class="col-lg-8">
+    <div class="card-custom">
+      <div class="card-header-custom">
+        <h6 class="mb-0 fw-bold"><i class="fa-solid fa-receipt text-success me-2"></i>Payment History</h6>
+        <span class="badge bg-success">{{ payments | length }} Payment(s)</span>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-custom align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Ref No.</th>
+              <th>Plan</th>
+              <th>Method</th>
+              <th>Date</th>
+              <th class="text-end">Amount</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in payments %}
+            <tr>
+              <td><code class="text-primary small">{{ p.reference_no or 'N/A' }}</code></td>
+              <td class="fw-semibold">{{ p.plan_name }}</td>
+              <td><span class="badge bg-light text-dark border small">{{ p.payment_method }}</span></td>
+              <td class="small">{{ p.payment_date | format_date }}</td>
+              <td class="text-end fw-bold text-success">{{ p.amount | currency }}</td>
+              <td>
+                <span class="badge badge-active">Paid</span>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="6" class="text-center py-5 text-muted">
+                <i class="fa-solid fa-receipt fa-2x mb-2 d-block opacity-25"></i>
+                No payment records found for this member.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+          {% if payments %}
+          <tfoot>
+            <tr style="background:#f0fdf4;">
+              <td colspan="4" class="text-end fw-bold">Total Paid:</td>
+              <td class="text-end fw-bold text-success fs-6">
+                ₹{{ "{:,.2f}".format(payments | sum(attribute='amount')) }}
+              </td>
+              <td></td>
+            </tr>
+          </tfoot>
+          {% endif %}
+        </table>
+      </div>
+    </div>
+
+    <!-- Assigned Workout Preview -->
+    {% if assigned_workout %}
+    <div class="card-custom mt-4">
+      <div class="card-header-custom">
+        <h6 class="mb-0 fw-bold"><i class="fa-solid fa-dumbbell text-primary me-2"></i>Current Assigned Workout</h6>
+        <span class="badge bg-primary-subtle text-primary">{{ assigned_workout.difficulty }}</span>
+      </div>
+      <div class="card-body p-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <div>
+            <h5 class="fw-bold mb-1">{{ assigned_workout.workout_name }}</h5>
+            <small class="text-muted">Assigned by: {{ assigned_workout.trainer_name }} • {{ assigned_workout.assigned_date | format_date }}</small>
+          </div>
+          <span class="badge bg-light text-dark border">{{ assigned_workout.exercises | length }} exercises</span>
+        </div>
+        {% if assigned_workout.notes %}
+        <div class="alert alert-info py-2 small mb-3">
+          <i class="fa-solid fa-circle-info me-1"></i> {{ assigned_workout.notes }}
+        </div>
+        {% endif %}
+        <div class="table-responsive">
+          <table class="table table-sm table-custom mb-0">
+            <thead>
+              <tr><th>Exercise</th><th>Sets</th><th>Reps</th><th>Instructions</th></tr>
+            </thead>
+            <tbody>
+              {% for ex in assigned_workout.exercises %}
+              <tr>
+                <td class="fw-semibold">{{ ex.name }}</td>
+                <td>{{ ex.sets }}</td>
+                <td>{{ ex.reps }}</td>
+                <td><small class="text-muted">{{ ex.instructions or '-' }}</small></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-3">
+          <a href="{{ url_for('trainer_trainees') }}" class="btn btn-outline-primary btn-sm">
+            <i class="fa-solid fa-pen me-1"></i> Change Workout Plan
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

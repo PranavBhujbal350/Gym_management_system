@@ -5,8 +5,12 @@
 
 {% block content %}
 <div class="card-custom">
-  <div class="card-header-custom">
-    <h6 class="mb-0 fw-bold"><i class="fa-solid fa-receipt text-primary me-2"></i>My Payment Receipts & Invoices</h6>
+  <div class="card-header-custom d-flex justify-content-between align-items-center">
+    <div>
+      <h6 class="mb-0 fw-bold"><i class="fa-solid fa-receipt text-primary me-2"></i>My Payment Receipts & Invoices</h6>
+      <small class="text-muted">Click "View Receipt" to get a printable bill for any payment</small>
+    </div>
+    <span class="badge bg-primary">{{ payments|length }} Record(s)</span>
   </div>
   <div class="table-responsive">
     <table class="table table-custom align-middle mb-0">
@@ -18,20 +22,35 @@
           <th>Date</th>
           <th>Amount Paid</th>
           <th>Status</th>
+          <th class="text-end">Receipt</th>
         </tr>
       </thead>
       <tbody>
         {% for p in payments %}
         <tr>
-          <td><code class="text-primary fw-semibold">{{ p.reference_no }}</code></td>
+          <td><code class="text-primary fw-semibold">{{ p.reference_no or 'N/A' }}</code></td>
           <td class="fw-bold">{{ p.plan_name }}</td>
           <td><span class="badge bg-light text-dark border">{{ p.payment_method }}</span></td>
           <td>{{ p.payment_date | format_date }}</td>
-          <td class="fw-bold text-success">{{ p.amount | currency }}</td>
-          <td><span class="badge badge-active">Paid & Active</span></td>
+          <td class="fw-bold text-success fs-6">{{ p.amount | currency }}</td>
+          <td>
+            {% if p.status == 'completed' %}
+              <span class="badge badge-active">Paid</span>
+            {% else %}
+              <span class="badge badge-expired">{{ p.status }}</span>
+            {% endif %}
+          </td>
+          <td class="text-end">
+            <a href="{{ url_for('member_receipt', payment_id=p._id) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+              <i class="fa-solid fa-file-invoice me-1"></i> View Receipt
+            </a>
+          </td>
         </tr>
         {% else %}
-        <tr><td colspan="6" class="text-center py-4 text-muted">No payment records found.</td></tr>
+        <tr><td colspan="7" class="text-center py-5 text-muted">
+          <i class="fa-solid fa-receipt fa-2x mb-2 d-block opacity-25"></i>
+          No payment records found. Contact the front desk to get started.
+        </td></tr>
         {% endfor %}
       </tbody>
     </table>

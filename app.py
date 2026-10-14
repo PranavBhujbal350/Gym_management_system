@@ -971,6 +971,22 @@ def member_payments():
     return render_template('member/payments.html', payments=payments, member=member)
 
 
+@app.route('/member/receipt/<payment_id>')
+@role_required('member')
+def member_receipt(payment_id):
+    user_id = to_object_id(session['user_id'])
+    member = members_col().find_one({"user_id": user_id})
+    payment = payments_col().find_one({"_id": to_object_id(payment_id), "member_id": member["_id"]})
+    if not payment:
+        flash("Receipt not found.", "danger")
+        return redirect(url_for('member_payments'))
+    # Get membership details
+    membership = None
+    if payment.get('membership_id'):
+        membership = memberships_col().find_one({"_id": payment['membership_id']})
+    return render_template('member/receipt.html', payment=payment, member=member, membership=membership)
+
+
 @app.route('/member/workouts')
 @role_required('member')
 def member_workouts():
@@ -1107,8 +1123,35 @@ def trainer_assign_workout():
         "notes": notes
     })
 
-    flash(f"Workout routine assigned to {member['name']}.", "success")
+    flash(f"Workout routine assigned to {member['name']}. Changes will reflect on their portal immediately.", "success")
     return redirect(url_for('trainer_trainees'))
+
+
+@app.route('/trainer/member/<member_id>/payments')
+@role_required('trainer')
+def trainer_member_payments(member_id):
+    """Trainer can view a specific member's payment history."""
+    user_id = to_object_id(session['user_id'])
+    trainer = trainers_col().find_one({"user_id": user_id})
+    member = members_col().find_one({"_id": to_object_id(member_id)})
+    if not member:
+        flash("Member not found.", "danger")
+        return redirect(url_for('trainer_trainees'))
+    payments = list(payments_col().find({"member_id": member["_id"]}).sort("payment_date", -1))
+    active_sub = memberships_col().find_one({
+        "member_id": member["_id"],
+        "status": "active",
+        "end_date": {"$gte": datetime.now()}
+    })
+    attendance_count = attendance_col().count_documents({"member_id": member["_id"]})
+    assigned_workout = member_workouts_col().find_one({"member_id": member["_id"]})
+    return render_template('trainer/member_detail.html',
+                           trainer=trainer,
+                           member=member,
+                           payments=payments,
+                           active_sub=active_sub,
+                           attendance_count=attendance_count,
+                           assigned_workout=assigned_workout)
 
 
 # ======================================================

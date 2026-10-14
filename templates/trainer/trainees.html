@@ -44,6 +44,9 @@
             <small class="fw-semibold text-secondary">{{ m.assigned_trainer }}</small>
           </td>
           <td class="text-end">
+            <a href="{{ url_for('trainer_member_payments', member_id=m._id) }}" class="btn btn-sm btn-outline-success me-1">
+              <i class="fa-solid fa-receipt me-1"></i> Details & Payments
+            </a>
             <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#assignRoutineModal{{ m._id }}">
               <i class="fa-solid fa-dumbbell me-1"></i> Assign Routine
             </button>

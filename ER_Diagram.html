@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FitPulse - Entity Relationship (ER) Diagram & Data Dictionary</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    body {
+      background-color: #f8fafc;
+      font-family: system-ui, -apple-system, sans-serif;
+      color: #0f172a;
+    }
+    .diagram-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .entity-box {
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #ffffff;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .entity-header {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 8px 12px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .table-custom th {
+      background: #f1f5f9;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .table-custom td {
+      font-size: 0.85rem;
+      vertical-align: middle;
+    }
+    .pk-pill {
+      background: #fef3c7;
+      color: #92400e;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+    }
+    .fk-pill {
+      background: #eff6ff;
+      color: #1e40af;
+      font-weight: 600;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+    }
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #ffffff; }
+      .diagram-card { box-shadow: none; border: 1px solid #ccc; }
+    }
+  </style>
+</head>
+<body class="py-4">
+  <div class="container-fluid px-lg-5">
+    <!-- Header -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
+      <div>
+        <h2 class="fw-bold mb-1"><i class="fa-solid fa-project-diagram text-primary me-2"></i>FitPulse: Entity Relationship (ER) Diagram</h2>
+        <p class="text-muted mb-0">MongoDB Collections Architecture, Schema Specification & Referential Cardinality</p>
+      </div>
+      <div class="no-print d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-outline-primary">
+          <i class="fa-solid fa-print me-1"></i> Print / Save as PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- Visual Mermaid Diagram -->
+    <div class="diagram-card">
+      <h5 class="fw-bold mb-3"><i class="fa-solid fa-sitemap text-primary me-2"></i>1. Visual Interactive ER Diagram</h5>
+      <p class="text-muted small mb-3">Shows all 9 MongoDB collections and their foreign key linkages.</p>
+      <div class="mermaid text-center overflow-auto p-3 bg-light rounded-3">
+erDiagram
+    users ||--|| members : "1:1 (user_id)"
+    users ||--|| trainers : "1:1 (user_id)"
+    members ||--o{ member_memberships : "1:N (member_id)"
+    membership_plans ||--o{ member_memberships : "1:N (plan_id)"
+    member_memberships ||--o{ payments : "1:N (membership_id)"
+    members ||--o{ payments : "1:N (member_id)"
+    members ||--o{ attendance : "1:N (member_id)"
+    workout_plans ||--o{ member_workouts : "1:N (workout_plan_id)"
+    trainers ||--o{ member_workouts : "1:N (trainer_id)"
+    members ||--o| member_workouts : "1:0..1 (member_id)"
+
+    users {
+        ObjectId _id PK
+        string name
+        string email UK
+        string phone
+        string password_hash
+        string role
+        string status
+        datetime created_at
+    }
+
+    members {
+        ObjectId _id PK
+        ObjectId user_id FK
+        string name
+        string email
+        string phone
+        string gender
+        string dob
+        string emergency_contact
+        string health_notes
+        string status
+    }
+
+    trainers {
+        ObjectId _id PK
+        ObjectId user_id FK
+        string name
+        string email
+        string specialization
+        int experience_years
+        string availability
+        string bio
+    }
+
+    membership_plans {
+        ObjectId _id PK
+        string plan_name
+        int duration_days
+        float price
+        string description
+        string status
+    }
+
+    member_memberships {
+        ObjectId _id PK
+        ObjectId member_id FK
+        ObjectId plan_id FK
+        datetime start_date
+        datetime end_date
+        float price
+        string status
+    }
+
+    payments {
+        ObjectId _id PK
+        ObjectId member_id FK
+        ObjectId membership_id FK
+        float amount
+        datetime payment_date
+        string payment_method
+        string reference_no
+        string status
+    }
+
+    attendance {
+        ObjectId _id PK
+        ObjectId member_id FK
+        string date
+        string check_in_time
+        string check_out_time
+        string status
+    }
+
+    workout_plans {
+        ObjectId _id PK
+        string name
+        string difficulty
+        string created_by
+        array exercises "Embedded [{name, sets, reps, notes}]"
+    }
+
+    member_workouts {
+        ObjectId _id PK
+        ObjectId member_id FK
+        ObjectId trainer_id FK
+        ObjectId workout_plan_id FK
+        string workout_name
+        datetime assigned_date
+        string notes
+    }
+      </div>
+    </div>
+
+    <!-- Data Dictionary Table -->
+    <div class="diagram-card">
+      <h5 class="fw-bold mb-3"><i class="fa-solid fa-table-list text-primary me-2"></i>2. Complete Database Schema Specification</h5>
+      <div class="table-responsive">
+        <table class="table table-custom table-bordered table-hover align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Collection</th>
+              <th>Field Name</th>
+              <th>Data Type</th>
+              <th>Key / Constraint</th>
+              <th>Description & Business Rules</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="fw-bold">users</td>
+              <td>_id<br>name<br>email<br>phone<br>password_hash<br>role<br>status</td>
+              <td>ObjectId<br>String<br>String<br>String<br>String<br>String<br>String</td>
+              <td><span class="pk-pill">PK</span><br>Required<br><span class="badge bg-danger">Unique</span><br>Optional<br>Salted Hash<br>admin/trainer/member<br>active/inactive</td>
+              <td>Authentication core. Stores encrypted PBKDF2/SHA256 password hashes. Enforces role security across routes.</td>
+            </tr>
+            <tr>
+              <td class="fw-bold">members</td>
+              <td>_id<br>user_id<br>gender<br>dob<br>emergency_contact<br>health_notes</td>
+              <td>ObjectId<br>ObjectId<br>String<br>String<br>String<br>String</td>
+              <td><span class="pk-pill">PK</span><br><span class="fk-pill">FK -> users._id</span><br>Male/Female/Other<br>YYYY-MM-DD<br>Phone<br>Text</td>
+              <td>Member athlete profile. 1:1 with users. Contains health notes for trainers to customize workouts.</td>
+            </tr>
+            <tr>
+              <td class="fw-bold">trainers</td>
+              <td>_id<br>user_id<br>specialization<br>experience_years<br>availability<br>bio</td>
+              <td>ObjectId<br>ObjectId<br>String<br>Integer<br>String<br>String</td>
+              <td><span class="pk-pill">PK</span><br><span class="fk-pill">FK -> users._id</span><br>Required<br>min=0<br>Shift hours<br>Text</td>
+              <td>Coach profile. 1:1 with users. Stores coach specialty (HIIT, Strength, CrossFit) and gym floor shift availability.</td>
+            </tr>
+            <tr>
+              <td class="fw-bold">membership_plans</td>
+              <td>_id<br>plan_name<br>duration_days<br>price<br>description</td>
+              <td>ObjectId<br>String<br>Integer<br>Float<br>String</td>
+              <td><span class="pk-pill">PK</span><br>Indexed<br>min=1<br>min=0.0<br>Text</td>
+              <td>Gym packages catalog (e.g., Monthly Starter 30 days ₹1,499, Annual Elite 365 days ₹11,999).</td>
+            </tr>
+            <tr>
+              <td class="fw-bold">member_memberships</td>
+              <td>_id<br>member_id<br>plan_id<br>start_date<br>end_date<br>status</td>
+              <td>ObjectId<br>ObjectId<br>ObjectId<br>DateTime<br>DateTime<br>String</td>
+              <td><span class="pk-pill">PK</span><br><span class="fk-pill">FK -> members._id</span><br><span class="fk-pill">FK -> plans._id</span><br>Now<br>Computed<br>active/expired</td>
+              <td>Active subscription. Automatically computes end_date = start_date + duration_days. Controls expiry countdown badge.</td>
+            </tr>
+            <tr>
+              <td class="fw-bold">payments</td>
+              <td>_id<br>member_id<br>membership_id<br>amount<br>payment_date<br>payment_method<br>reference_no</td>
+              <td>ObjectId<br>ObjectId<br>ObjectId<br>Float<br>DateTime<br>String<br>String</td>
+              <td><span class="pk-pill">PK</span><br><span class="fk-pill">FK -> members._id</span><br><span class="fk-pill">FK -> memberships._id</span><br>min=0.0<br>Now<br>Cash/Card/UPI<br>PAY-XXXX</td>
+              <td>Audit ledger of simulated/manual payments for calculating gross revenue and printing receipts.</td>
+            </tr>
+            <tr>
+              <td class="fw-bold">attendance</td>
+              <td>_id<br>member_id<br>date<br>check_in_time<br>check_out_time<br>status</td>
+              <td>ObjectId<br>ObjectId<br>String<br>String<br>String<br>String</td>
+              <td><span class="pk-pill">PK</span><br><span class="fk-pill">FK -> members._id</span><br>YYYY-MM-DD<br>HH:MM:SS<br>HH:MM:SS<br>Present</td>
+              <td>Daily check-in registry. Tracks gym capacity and member workout habits per date.</td>
+            </tr>
+            <tr>
+              <td class="fw-bold">workout_plans</td>
+              <td>_id<br>name<br>difficulty<br>exercises</td>
+              <td>ObjectId<br>String<br>Enum<br>Array of Objects</td>
+              <td><span class="pk-pill">PK</span><br>Indexed<br>Beg/Int/Adv<br>Embedded Sub-docs</td>
+              <td>Workout routine templates. Embeds dynamic exercise arrays: [{name, sets, reps, notes}] without needing junction tables.</td>
+            </tr>
+            <tr>
+              <td class="fw-bold">member_workouts</td>
+              <td>_id<br>member_id<br>workout_plan_id<br>trainer_id<br>assigned_date</td>
+              <td>ObjectId<br>ObjectId<br>ObjectId<br>ObjectId<br>DateTime</td>
+              <td><span class="pk-pill">PK</span><br><span class="fk-pill">FK -> members._id</span><br><span class="fk-pill">FK -> workouts._id</span><br><span class="fk-pill">FK -> trainers._id</span><br>Now</td>
+              <td>Active assignment connecting a member to their prescribed workout routine supervised by a coach.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'default' });
+  </script>
+</body>
+</html>
